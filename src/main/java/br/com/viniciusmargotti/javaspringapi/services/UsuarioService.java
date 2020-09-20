@@ -19,12 +19,15 @@ public class UsuarioService {
     @PrePersist
     @PreUpdate
     private void beforeAnyUpdate(Usuario usuario) {
-       Usuario usuarioExistente = usuarioRepository.findByEmail(usuario.getEmail());
-
-       if(usuarioExistente != null && usuarioExistente.getId().equals(usuario.getId())){
-           new RuntimeException("Já existe um usuário cadastrado para o email " + usuario.getEmail());
-       }
-
+       validaUsuarioDuplicado(usuario);
        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+    }
+
+    private void validaUsuarioDuplicado(Usuario usuario) {
+        Usuario usuarioExistente = usuarioRepository.findByEmail(usuario.getEmail());
+
+        if(usuarioExistente != null && usuarioExistente.getId().equals(usuario.getId())){
+            new RuntimeException("Já existe um usuário cadastrado para o email " + usuario.getEmail());
+        }
     }
 }
